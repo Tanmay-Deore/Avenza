@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useVisual } from './visualStateStore';
+import { useAvenza } from '../state/AppContext';
 import { HeroRibbon } from './HeroRibbon';
 import { TorusRing } from './TorusRing';
 import { Spine } from './Spine';
 import { GlassPanelGroup } from './GlassPanelGroup';
 import { ParticleField } from './ParticleField';
+import { NavigatorMotionController, NAVIGATOR_UPGRADE_CONFIG } from './NavigatorMotionController';
 
 export const SceneRoot: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -14,6 +16,7 @@ export const SceneRoot: React.FC = () => {
     setHoveredPanelIndex,
     openModuleDrawer,
   } = useVisual();
+  const { user, activeStep } = useAvenza();
 
   const [webglSupported, setWebglSupported] = useState(true);
 
@@ -26,6 +29,13 @@ export const SceneRoot: React.FC = () => {
   const spineRef = useRef<Spine | null>(null);
   const glassPanelsRef = useRef<GlassPanelGroup | null>(null);
   const particlesRef = useRef<ParticleField | null>(null);
+  const motionControllerRef = useRef<NavigatorMotionController | null>(null);
+  const ambientLightRef = useRef<THREE.AmbientLight | null>(null);
+  const mainLightRef = useRef<THREE.DirectionalLight | null>(null);
+  const softRimLightRef = useRef<THREE.DirectionalLight | null>(null);
+
+  // Reusable vector for pointer3D to eliminate GC stutter
+  const pointer3DRef = useRef(new THREE.Vector3());
 
   // Animation & Camera targets
   const targetCamPos = useRef(new THREE.Vector3(0, 0, 5.0));
@@ -35,7 +45,14 @@ export const SceneRoot: React.FC = () => {
   const pointerParallax = useRef(new THREE.Vector2(0, 0));
 
   const stateRef = useRef(state);
-  stateRef.current = state;
+  const userRef = useRef(user);
+  const activeStepRef = useRef(activeStep);
+
+  useEffect(() => {
+    stateRef.current = state;
+    userRef.current = user;
+    activeStepRef.current = activeStep;
+  }, [state, user, activeStep]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -84,14 +101,17 @@ export const SceneRoot: React.FC = () => {
 
     // 4. Soft Daylight Lighting
     const ambientLight = new THREE.AmbientLight(isBright ? 0xffffff : 0x242a3e, isBright ? 1.35 : 0.85);
+    ambientLightRef.current = ambientLight;
     scene.add(ambientLight);
 
     const mainLight = new THREE.DirectionalLight(0xffffff, isBright ? 1.45 : 1.15);
     mainLight.position.set(5, 8, 5);
+    mainLightRef.current = mainLight;
     scene.add(mainLight);
 
     const softRimLight = new THREE.DirectionalLight(isBright ? 0xcfe3ff : 0x7db8ff, isBright ? 0.75 : 0.6);
     softRimLight.position.set(-5, -4, -3);
+    softRimLightRef.current = softRimLight;
     scene.add(softRimLight);
 
     // 5. Instantiate 3D Elements
@@ -115,6 +135,10 @@ export const SceneRoot: React.FC = () => {
     const particles = new ParticleField(particleCount, isBright);
     particlesRef.current = particles;
     scene.add(particles.points);
+
+    // 6. Master Motion & Intelligence Layer
+    const motionController = new NavigatorMotionController(scene, isBright);
+    motionControllerRef.current = motionController;
 
     // 6. Pointer & Parallax handlers
     const handlePointerMove = (e: MouseEvent) => {
@@ -157,7 +181,7 @@ export const SceneRoot: React.FC = () => {
 
     // 8. Master Animation Render Loop
     let animId: number;
-    let clock = new THREE.Clock();
+    let lastTime = performance.now() * 0.001;
     let isTabVisible = true;
 
     const handleVisibilityChange = () => {
@@ -169,9 +193,13 @@ export const SceneRoot: React.FC = () => {
       animId = requestAnimationFrame(renderLoop);
       if (!isTabVisible) return;
 
-      const delta = clock.getDelta();
-      const time = clock.getElapsedTime();
+      const now = performance.now() * 0.001;
+      const delta = Math.min(0.1, now - lastTime);
+      lastTime = now;
+      const time = now;
       const s = stateRef.current;
+      const u = userRef.current;
+      const step = activeStepRef.current;
       const p = s.scrollProgress; // 0.0 to 1.0
 
       // Calculate master camera trajectory across scenes
@@ -221,9 +249,10 @@ export const SceneRoot: React.FC = () => {
         cameraRef.current.lookAt(currentCamLookAt.current);
       }
 
-      // Update 3D Elements
-      const pointer3D = new THREE.Vector3(pointerParallax.current.x * 3.0, pointerParallax.current.y * 2.0, 0);
+      // Update 3D Elements (zero allocations per frame)
+      pointer3DRef.current.set(pointerParallax.current.x * 3.0, pointerParallax.current.y * 2.0, 0);
 
+      // Layer 1: Base elements
       if (heroRibbonRef.current) {
         heroRibbonRef.current.update(time, p, s.coreState);
       }
@@ -238,7 +267,26 @@ export const SceneRoot: React.FC = () => {
         glassPanelsRef.current.update(time, p, s.activePanelIndex, s.hoveredPanelIndex, glitchFactor);
       }
       if (particlesRef.current) {
-        particlesRef.current.update(time, pointer3D, p);
+        particlesRef.current.update(time, pointer3DRef.current, p);
+      }
+
+      // Layer 2, 3, 4: Master Motion & Intelligence Controller
+      if (motionControllerRef.current && NAVIGATOR_UPGRADE_CONFIG.enabled) {
+        motionControllerRef.current.update({
+          time,
+          delta,
+          scrollProgress: p,
+          visualState: s,
+          heroRibbon: heroRibbonRef.current,
+          torusRing: torusRingRef.current,
+          camera: cameraRef.current,
+          ambientLight: ambientLightRef.current,
+          mainLight: mainLightRef.current,
+          softRimLight: softRimLightRef.current,
+          activeCheckpointName: step?.title,
+          targetRole: u.currentGoal?.targetRoleOrSkill,
+          isRerouting: s.isRerouting,
+        });
       }
 
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
@@ -260,6 +308,7 @@ export const SceneRoot: React.FC = () => {
       if (spineRef.current) spineRef.current.dispose();
       if (glassPanelsRef.current) glassPanelsRef.current.dispose();
       if (particlesRef.current) particlesRef.current.dispose();
+      if (motionControllerRef.current) motionControllerRef.current.dispose();
 
       if (rendererRef.current && rendererRef.current.domElement) {
         rendererRef.current.dispose();
@@ -278,6 +327,7 @@ export const SceneRoot: React.FC = () => {
     if (spineRef.current) spineRef.current.setBrightTheme(isBright);
     if (glassPanelsRef.current) glassPanelsRef.current.setBrightTheme(isBright);
     if (particlesRef.current) particlesRef.current.setBrightTheme(isBright);
+    if (motionControllerRef.current) motionControllerRef.current.setBrightTheme(isBright);
   }, [state.theme]);
 
   if (!webglSupported) {

@@ -7,6 +7,7 @@ export class HeroRibbon {
   public ringMesh: THREE.Mesh;
   public innerCoreMesh: THREE.Mesh;
   public skillNodeGroup: THREE.Group;
+  public curve: THREE.CatmullRomCurve3;
   
   private ribbonMaterial: THREE.MeshPhysicalMaterial;
   private ringMaterial: THREE.MeshPhysicalMaterial;
@@ -28,6 +29,7 @@ export class HeroRibbon {
     }
 
     const curve = new THREE.CatmullRomCurve3(curvePoints, true);
+    this.curve = curve;
     const ribbonGeo = new THREE.TubeGeometry(curve, 100, 0.08, 16, true);
 
     // Translucent physical warm stone glass material matching Section 06:
