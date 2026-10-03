@@ -1,0 +1,279 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Canvas */
+    --av-paper:        #F3EBDD; /* primary warm beige */
+    --av-paper-2:      #EDE3D2; /* secondary, slightly deeper */
+    --av-paper-3:      #EEE6D8;
+    --av-paper-deep:   #EDE3D2;
+    --av-paper-light:  #F8F4EC; /* very soft cream, nav/cards */
+    --av-cream:        #F8F4EC;
+    --av-cream-text:   #F7F0E5; /* light text on dark */
+
+    /* Charcoal structure */
+    --av-shell:        #1F201C; /* top bar */
+    --av-header:       #232420; /* app header */
+    --av-sidebar:      #242520;
+    --av-card:         #282923; /* primary card */
+    --av-card-2:       #30312C; /* variation / selected */
+    --av-card-3:       #373832; /* inner surface */
+
+    /* Soft black (structure legacy aliases) */
+    --av-black:        #20211E;
+    --av-black-2:      #292A26;
+    --av-black-3:      #32332E;
+    --av-panel:        #242520;
+    --av-panel-2:      #2E302B;
+    --av-panel-input:  #30322D;
+    --av-panel-line:   #57584E;
+
+    /* Text on charcoal */
+    --av-t1:           #F5EFE4; /* 12.8:1 */
+    --av-t2:           #BDB5A7; /* 7.2:1 */
+    --av-t3:           #A39F94; /* 5.6:1 on card, 4.5:1 on card-3 */
+
+    /* Text on paper */
+    --av-ink:          #282923;
+    --av-ink-2:        #5F5C53; /* 5.6:1 on paper */
+    --av-ink-muted:    #6B685E;
+
+    /* Accents (FILL tier) */
+    --av-earth:        #A48B6A;
+    --av-sage:         #9BB59F;
+    --av-blue:         #8798B7;
+    --av-lav:          #A79BC4;
+    --av-clay:         #C6927D;
+    --av-gold:         #D1B46A;
+    --av-gray:         #77776E;
+
+    /* Accents as TEXT on charcoal (lightened for contrast) */
+    --av-blue-t:       #A9B7D0;
+    --av-sage-t:       #B4CCB8;
+    --av-lav-t:        #BDB2D6;
+    --av-clay-t:       #E3A28E;
+    --av-gold-t:       #E0C77F;
+    --av-gray-t:       #A8A498;
+
+    /* INK tier (text on paper) */
+    --av-text:         #20211E;
+    --av-text-2:       #5A5B53;
+    --av-text-muted:   #64625A;
+    --av-blue-ink:     #4F6288;
+    --av-sage-ink:     #4C6650;
+    --av-clay-ink:     #8A5440;
+    --av-gold-ink:     #7A6128;
+    --av-earth-ink:    #8A7050;
+
+    /* Lines and tracks */
+    --av-line:         #4A4A42;
+    --av-track:        #45463F;
+    --av-line-light:   #D4C8B8;
+    --av-subtle:       #B5AE9F;
+    --av-line-strong:  #CFC2AE;
+
+    /* Glass and shadow */
+    --av-glass:        rgba(255, 250, 241, 0.72);
+    --av-glass-cool:   rgba(238, 242, 245, 0.68);
+    --av-glass-warm:   rgba(238, 228, 213, 0.68);
+    --av-glass-dark:   rgba(32, 33, 30, 0.88);
+    --av-shadow:       rgba(40, 34, 27, 0.12);
+    --av-shadow-soft:  rgba(61, 54, 44, 0.10);
+
+    --bg-main: var(--av-paper);
+    --text-primary: var(--av-text);
+    --text-secondary: var(--av-text-2);
+  }
+
+  .dark {
+    --av-paper:        #1B1C19;
+    --av-paper-deep:   #151613;
+    --av-paper-light:  #242520;
+    --av-cream-text:   #F4EDE1;
+
+    --av-text:         #F4EDE1;
+    --av-text-2:       #D2C9BB;
+    --av-text-muted:   #BDB5A6;
+    --av-blue-ink:     #9FB0D3;
+    --av-sage-ink:     #B0BFA9;
+    --av-clay-ink:     #D3A18B;
+    --av-gold-ink:     #E0C57F;
+    --av-earth-ink:    #C2AA8C;
+
+    --av-panel:        #242520;
+    --av-panel-2:      #2E302B;
+    --av-panel-input:  #30322D;
+    --av-panel-line:   #57584E;
+
+    --av-glass:        rgba(36, 37, 32, 0.80);
+    --av-line:         #3B3E36;
+    --av-shadow:       rgba(0, 0, 0, 0.5);
+
+    --bg-main: var(--av-paper);
+    --text-primary: var(--av-text);
+    --text-secondary: var(--av-text-2);
+  }
+
+  body {
+    background-color: var(--av-paper);
+    color: var(--av-text);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(132, 149, 184, 0.4);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(132, 149, 184, 0.7);
+  }
+}
+
+/* Glassmorphism Utilities */
+.glass-panel-paper {
+  background: var(--av-glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--av-line);
+  box-shadow: 0 10px 30px -10px var(--av-shadow);
+}
+
+.glass-pill {
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--av-line);
+  box-shadow: 0 4px 20px -2px var(--av-shadow);
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.font-skill-primary {
+  font-family: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-skill-mono {
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+@keyframes clayPulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes runnerGlide {
+  0% {
+    left: -20%;
+  }
+  100% {
+    left: 110%;
+  }
+}
+
+@keyframes skillSignalGlide {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+    box-shadow: 0 0 0 transparent;
+  }
+  15% {
+    opacity: 1;
+    box-shadow: 0 0 6px var(--signal-glow, rgba(155, 181, 159, 0.8));
+  }
+  75% {
+    opacity: 0.9;
+    box-shadow: 0 0 8px var(--signal-glow, rgba(155, 181, 159, 0.9));
+  }
+  100% {
+    transform: translateX(96px);
+    opacity: 0;
+    box-shadow: 0 0 0 transparent;
+  }
+}
+
+@keyframes statusPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 var(--pulse-color, rgba(135, 152, 183, 0.4));
+  }
+  45% {
+    transform: scale(1.03);
+    box-shadow: 0 0 10px 2px var(--pulse-color, rgba(135, 152, 183, 0.4));
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@keyframes progressSegmentGleam {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.85;
+  }
+  75% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(250%);
+    opacity: 0;
+  }
+}
+
+@keyframes skillGapSignalGlide {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+    box-shadow: 0 0 6px rgba(198, 146, 125, 0.8);
+  }
+  80% {
+    opacity: 0.9;
+    box-shadow: 0 0 8px rgba(198, 146, 125, 0.9);
+  }
+  100% {
+    transform: translateX(48px);
+    opacity: 0;
+  }
+}
+
+@keyframes livePulseOnce {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(155, 181, 159, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 8px 2px rgba(155, 181, 159, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
