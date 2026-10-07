@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppProvider, useAvenza } from './state/AppContext';
 import { VisualProvider, useVisual } from './visual/visualStateStore';
 import { CinematicView } from './visual/CinematicView';
@@ -14,9 +14,28 @@ import { SkillPassportView } from './components/passport/SkillPassportView';
 import { ProfileView } from './components/profile/ProfileView';
 import { OnboardingModal } from './components/onboarding/OnboardingModal';
 import { VerificationModal } from './components/verification/VerificationModal';
+import { PrivacyPolicyView } from './components/legal/PrivacyPolicyView';
+import { TermsView } from './components/legal/TermsView';
+import { SiteFooter } from './components/legal/SiteFooter';
+import { updatePageMetadata } from './services/siteConfig';
 import { Compass, Sparkles } from 'lucide-react';
 
-const WorkspaceLayout: React.FC = () => {
+export type AppRoute = 'app' | 'privacy' | 'terms';
+
+export function getInitialRoute(): AppRoute {
+  if (typeof window === 'undefined') return 'app';
+  const path = window.location.pathname.toLowerCase();
+  const hash = window.location.hash.toLowerCase();
+  if (path === '/privacy' || path.startsWith('/privacy/') || hash === '#privacy' || hash === '#/privacy') {
+    return 'privacy';
+  }
+  if (path === '/terms' || path.startsWith('/terms/') || hash === '#terms' || hash === '#/terms') {
+    return 'terms';
+  }
+  return 'app';
+}
+
+const WorkspaceLayout: React.FC<{ onNavigate: (route: AppRoute) => void }> = ({ onNavigate }) => {
   const { activeTab, isOnboardingOpen } = useAvenza();
   const { setViewMode, state } = useVisual();
   const [isManualOnboardingOpen, setIsManualOnboardingOpen] = useState(false);
@@ -81,6 +100,9 @@ const WorkspaceLayout: React.FC = () => {
         </main>
       </div>
 
+      {/* Minimal Site Footer for Legal & Copyright */}
+      <SiteFooter onNavigate={onNavigate} variant={isBright ? 'light' : 'dark'} />
+
       {/* Global Modals */}
       <OnboardingModal
         isOpen={isOnboardingOpen || isManualOnboardingOpen}
@@ -96,6 +118,46 @@ const RootAppContent: React.FC = () => {
   const { state } = useVisual();
   const { isOnboardingOpen } = useAvenza();
   const [isManualOnboardingOpen, setIsManualOnboardingOpen] = useState(false);
+  const [currentRoute, setCurrentRoute] = useState<AppRoute>(getInitialRoute);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentRoute(getInitialRoute());
+    };
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('hashchange', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('hashchange', handlePopState);
+    };
+  }, []);
+
+  const navigateTo = (route: AppRoute) => {
+    const targetPath = route === 'app' ? '/' : `/${route}`;
+    if (window.location.pathname !== targetPath) {
+      window.history.pushState({}, '', targetPath);
+    }
+    setCurrentRoute(route);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    if (currentRoute === 'app') {
+      updatePageMetadata({
+        title: 'AVENZA — AI-Powered Navigation for Learning and Career Growth',
+        description: 'Avenza helps you understand where you are, what you actually know, what skills you are missing, and dynamically navigates you to your goal.',
+        path: '/',
+      });
+    }
+  }, [currentRoute]);
+
+  if (currentRoute === 'privacy') {
+    return <PrivacyPolicyView onNavigate={navigateTo} />;
+  }
+
+  if (currentRoute === 'terms') {
+    return <TermsView onNavigate={navigateTo} />;
+  }
 
   if (state.viewMode === 'cinematic') {
     return (
@@ -110,7 +172,7 @@ const RootAppContent: React.FC = () => {
     );
   }
 
-  return <WorkspaceLayout />;
+  return <WorkspaceLayout onNavigate={navigateTo} />;
 };
 
 export function App() {

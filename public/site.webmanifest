@@ -1,0 +1,28 @@
+{
+  "name": "AVENZA — AI-Powered Navigation",
+  "short_name": "AVENZA",
+  "description": "AI-Powered Navigation for Learning and Career Growth",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#20211E",
+  "theme_color": "#20211E",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

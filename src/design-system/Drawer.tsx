@@ -57,25 +57,25 @@ export const Drawer: React.FC<DrawerProps> = ({
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-[#1E1D19]/48 backdrop-blur-sm transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <div className={cn('fixed w-full h-full bg-[#121826] border-l border-[#26354D] shadow-2xl flex flex-col z-10', positions[position], sizes[size], className)}>
+      <div className={cn('fixed w-full h-full bg-[#24251F] border-l border-[#45463F] shadow-[0_25px_50px_-12px_rgba(31,29,25,0.22)] flex flex-col z-10', positions[position], sizes[size], className)}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#26354D] bg-[#182234]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#4A4941] bg-[#292A25]">
           <div>
             {typeof title === 'string' ? (
-              <h3 className="text-base font-bold text-gray-100">{title}</h3>
+              <h3 className="text-base font-bold text-[#F4EDE1]">{title}</h3>
             ) : (
               title
             )}
-            {description && <p className="text-xs text-gray-400 mt-0.5">{description}</p>}
+            {description && <p className="text-xs text-[#A9A294] mt-0.5">{description}</p>}
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-100 hover:bg-[#26354D] transition-colors"
+            className="p-1.5 rounded-lg text-[#A69F93] hover:text-[#F4EDE1] hover:bg-[#35362F] transition-colors"
             aria-label="Close panel"
           >
             <X className="w-5 h-5" />

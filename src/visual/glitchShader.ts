@@ -9,6 +9,8 @@ export const GlitchShader = {
     uResolution: { value: new THREE.Vector2(1, 1) },
     uRimColor: { value: new THREE.Color('#7DB8FF') },
     uBorderWidth: { value: 0.02 },
+    uPointerUv: { value: new THREE.Vector2(0.5, 0.5) },
+    uHover: { value: 0.0 },
   },
   vertexShader: `
     varying vec2 vUv;
@@ -30,6 +32,8 @@ export const GlitchShader = {
     uniform float uProgress;
     uniform vec3 uRimColor;
     uniform float uBorderWidth;
+    uniform vec2 uPointerUv;
+    uniform float uHover;
 
     varying vec2 vUv;
     varying vec3 vNormal;
@@ -62,8 +66,15 @@ export const GlitchShader = {
       vec4 texColor = vec4(colR.r, colG.g, colB.b, colG.a);
 
       // Soft paper/film grain (subtle 3-5%)
-      float grain = (random(uv * uTime) - 0.5) * 0.05;
+      float grain = (random(uv * uTime) - 0.5) * 0.04;
       texColor.rgb += grain;
+
+      // Cursor-following soft radial sheen (mix-blend soft light style)
+      if (uHover > 0.01) {
+        float distToPtr = length(uv - uPointerUv);
+        float sheen = exp(-distToPtr * 3.2) * 0.26 * uHover;
+        texColor.rgb += vec3(sheen);
+      }
 
       // Soft rounded rect card border highlight
       float edgeDistX = min(vUv.x, 1.0 - vUv.x);
@@ -72,7 +83,12 @@ export const GlitchShader = {
 
       if (edgeDist < uBorderWidth) {
         float rimFactor = smoothstep(0.0, uBorderWidth, edgeDist);
-        texColor.rgb = mix(uRimColor * 1.2, texColor.rgb, rimFactor);
+        vec3 rimCol = uRimColor * 1.3;
+        if (uHover > 0.01) {
+          float ptrAngleDist = length(vUv - uPointerUv);
+          rimCol += vec3(0.35) * smoothstep(0.65, 0.0, ptrAngleDist) * uHover;
+        }
+        texColor.rgb = mix(rimCol, texColor.rgb, rimFactor);
       }
 
       // Fresnel rim highlight

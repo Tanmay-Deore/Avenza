@@ -1,0 +1,6 @@
+# User-agent permissions for Avenza
+User-agent: *
+Allow: /
+Allow: /privacy
+Allow: /terms
+

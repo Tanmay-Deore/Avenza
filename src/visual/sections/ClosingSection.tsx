@@ -46,6 +46,33 @@ export const ClosingSection: React.FC = () => {
             <span>VIEW PASSPORT ({passport.verifiedSkillsCount})</span>
           </button>
         </div>
+
+        {/* Discreet Legal Links */}
+        <div className="pt-8 text-xs font-mono text-[#64625A] dark:text-[#BDB5A6] flex items-center justify-center gap-4">
+          <a
+            href="/privacy"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState({}, '', '/privacy');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+            className="hover:text-[#20211E] dark:hover:text-[#F4EDE1] underline underline-offset-4 transition-colors"
+          >
+            Privacy Policy
+          </a>
+          <span className="text-[#A39F94] dark:text-[#64625A]">•</span>
+          <a
+            href="/terms"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState({}, '', '/terms');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+            className="hover:text-[#20211E] dark:hover:text-[#F4EDE1] underline underline-offset-4 transition-colors"
+          >
+            Terms & Conditions
+          </a>
+        </div>
       </div>
     </section>
   );

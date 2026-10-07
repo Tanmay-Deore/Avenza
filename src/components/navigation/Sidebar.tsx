@@ -153,6 +153,33 @@ export const Sidebar: React.FC = () => {
           Ask Mentor →
         </button>
       </div>
+
+      {/* Bottom Legal Links for Desktop Sidebar */}
+      <div className="hidden lg:flex items-center justify-center gap-3 pt-3 px-2 text-[10px] font-mono text-[#8A877E]">
+        <a
+          href="/privacy"
+          onClick={(e) => {
+            e.preventDefault();
+            window.history.pushState({}, '', '/privacy');
+            window.dispatchEvent(new PopStateEvent('popstate'));
+          }}
+          className="hover:text-[#F5EFE4] underline underline-offset-2 transition-colors"
+        >
+          Privacy Policy
+        </a>
+        <span>•</span>
+        <a
+          href="/terms"
+          onClick={(e) => {
+            e.preventDefault();
+            window.history.pushState({}, '', '/terms');
+            window.dispatchEvent(new PopStateEvent('popstate'));
+          }}
+          className="hover:text-[#F5EFE4] underline underline-offset-2 transition-colors"
+        >
+          Terms & Conditions
+        </a>
+      </div>
     </aside>
   );
 };

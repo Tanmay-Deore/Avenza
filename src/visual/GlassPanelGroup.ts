@@ -221,34 +221,15 @@ export class GlassPanelGroup {
   }
 
   public update(
-    time: number,
-    scrollProgress: number,
-    activePanelIdx: number,
-    hoveredPanelIdx: number | null,
-    glitchIntensity: number = 0.0
+    _time: number,
+    _scrollProgress: number,
+    _activePanelIdx: number,
+    _hoveredPanelIdx: number | null,
+    _glitchIntensity: number = 0.0
   ) {
-    if (scrollProgress >= 0.32) {
-      this.group.visible = true;
-
-      this.panelMeshes.forEach((mesh, idx) => {
-        const mat = this.materials[idx];
-        mat.uniforms.uTime.value = time;
-
-        const isCurrent = idx === activePanelIdx;
-        const isHovered = idx === hoveredPanelIdx;
-
-        const glitchVal = isCurrent ? Math.max(glitchIntensity, 0.0) : (isHovered ? 0.25 : 0.0);
-        mat.uniforms.uGlitch.value = THREE.MathUtils.lerp(mat.uniforms.uGlitch.value, glitchVal, 0.2);
-
-        const targetScale = isHovered ? 1.08 : isCurrent ? 1.03 : 0.94;
-        mesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
-
-        const targetZ = isHovered ? 0.6 : isCurrent ? 0.2 : -0.1;
-        mesh.position.z = THREE.MathUtils.lerp(mesh.position.z, targetZ, 0.1);
-      });
-    } else {
-      this.group.visible = false;
-    }
+    // Keep this.group.visible = false so Three.js does not render duplicate 2D canvas texture card meshes
+    // behind the HTML DOM cards in GallerySection.tsx (fixes duplicate Learning Route card)
+    this.group.visible = false;
   }
 
   public setBrightTheme(isBright: boolean) {

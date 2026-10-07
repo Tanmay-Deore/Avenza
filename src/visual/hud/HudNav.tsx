@@ -1,22 +1,15 @@
 import React, { useState } from 'react';
 import { useVisual } from '../visualStateStore';
-import { useAvenza } from '../../state/AppContext';
 import {
   Compass,
   Sun,
   Moon,
   Layers,
-  Map,
-  Bot,
-  Award,
-  Zap,
-  RotateCcw,
-  Sparkles,
 } from 'lucide-react';
+import { AvenzaNavigationPortal } from './AvenzaNavigationPortal';
 
 export const HudNav: React.FC = () => {
   const { state, toggleTheme, setViewMode, openModuleDrawer } = useVisual();
-  const { user, resetAllData } = useAvenza();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isBright = state.theme === 'bright';
@@ -104,66 +97,13 @@ export const HudNav: React.FC = () => {
         </div>
       </header>
 
-      {/* Floating Modal / Drawer Menu */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-[#20211E]/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="max-w-md w-full rounded-2xl bg-[#F8F4EC] dark:bg-[#242520] border border-[#D8CCB9] dark:border-[#3B3E36] p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-[#D8CCB9] dark:border-[#3B3E36] pb-4">
-              <div className="flex items-center gap-2">
-                <Compass className="w-5 h-5 text-[#20211E] dark:text-[#F4EDE1]" />
-                <h3 className="font-bold text-sm text-[#20211E] dark:text-[#F4EDE1]">AVENZA NAVIGATION PORTAL</h3>
-              </div>
-              <button
-                onClick={() => setIsMenuOpen(false)}
-                className="text-xs font-mono text-[#64625A] dark:text-[#BDB5A6] hover:text-[#20211E] dark:hover:text-white"
-              >
-                CLOSE [ESC]
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2.5">
-              {[
-                { id: 'skills', label: '01. Skill Map', icon: <Layers className="w-4 h-4" />, color: '#4F6288' },
-                { id: 'journey', label: '02. Learning Route', icon: <Map className="w-4 h-4" />, color: '#4C6650' },
-                { id: 'mentor', label: '03. AI Mentor', icon: <Bot className="w-4 h-4" />, color: '#5E5277' },
-                { id: 'discover', label: '04. Discovery Compass', icon: <Sparkles className="w-4 h-4" />, color: '#8A5440' },
-                { id: 'missions', label: '05. Practical Labs', icon: <Zap className="w-4 h-4" />, color: '#4C6650' },
-                { id: 'passport', label: '06. Skill Passport', icon: <Award className="w-4 h-4" />, color: '#4F6288' },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    openModuleDrawer(item.id);
-                  }}
-                  className="p-3 rounded-xl bg-[#EDE3D2] dark:bg-[#2E302B] hover:bg-[#E8DDCB] dark:hover:bg-[#383A35] border border-[#D8CCB9] dark:border-[#3B3E36] text-left transition-all group"
-                >
-                  <div className="mb-1 group-hover:scale-110 transition-transform" style={{ color: item.color }}>
-                    {item.icon}
-                  </div>
-                  <div className="text-xs font-bold text-[#20211E] dark:text-[#F4EDE1]">{item.label}</div>
-                </button>
-              ))}
-            </div>
-
-            <div className="pt-2 border-t border-[#D8CCB9] dark:border-[#3B3E36] flex items-center justify-between text-xs text-[#64625A] dark:text-[#BDB5A6]">
-              <span className="font-mono">User: {user.name}</span>
-              <button
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  if (window.confirm('Reset demo state to initial fresh status?')) {
-                    resetAllData();
-                  }
-                }}
-                className="text-[#8A5440] hover:underline flex items-center gap-1 font-medium"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                Reset Demo
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Floating Premium Cinematic Navigation Portal */}
+      <AvenzaNavigationPortal
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        onSelectModule={openModuleDrawer}
+        activeModuleId={state.activeModuleDrawer}
+      />
     </>
   );
 };

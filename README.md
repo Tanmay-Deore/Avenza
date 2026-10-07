@@ -30,3 +30,26 @@ If you are developing a production application, we recommend enabling type-aware
 ```
 
 See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+
+---
+
+## CUSTOM DOMAIN SETUP
+
+### Parameters
+- **DOMAIN:** `YOUR_DOMAIN_HERE`
+- **HOST:** `CURRENT_HOSTING_PROVIDER`
+
+### Application-Side Configuration
+1. **Environment Variable**: Set your production domain base URL in `.env` or your hosting provider's environment variables:
+   ```bash
+   VITE_SITE_URL=https://YOUR_DOMAIN_HERE
+   ```
+2. **Canonical & Metadata Resolution**: The application automatically reads `VITE_SITE_URL` to configure:
+   - Canonical `<link rel="canonical">` tags
+   - Open Graph `<meta property="og:url">` URLs
+   - Absolute URLs for social cards and sharing
+   - Legal routes (`/privacy` and `/terms`)
+3. **Single Page Application (SPA) Routing**:
+   Ensure your hosting provider is configured to rewrite all routes to `/index.html`:
+   - **Vercel / Netlify / Cloudflare Pages**: Ensure single-page rewrite rules (`/* -> /index.html`) are active so `/privacy` and `/terms` can be loaded directly on initial request or hard refresh.
+

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useAvenza } from '../../state/AppContext';
+import { useDashboardMotion } from './useDashboardMotion';
 import { AvenzaCardWrapper } from './AvenzaCardWrapper';
 import { Target, ArrowUpRight } from 'lucide-react';
 
 export const GoalSummaryCard: React.FC = () => {
   const { user, setActiveTab } = useAvenza();
+  const { activeRelationship } = useDashboardMotion();
   const [isHovered, setIsHovered] = useState(false);
   const goal = user.currentGoal;
 
@@ -14,20 +16,37 @@ export const GoalSummaryCard: React.FC = () => {
     <AvenzaCardWrapper
       preset="secondary"
       tint="gold"
+      isHighlighted={Boolean(activeRelationship)}
+      highlightColor="#D1B46A"
       onHoverChange={setIsHovered}
       className="w-full"
     >
-      <div className="bg-[#282923] border border-[#4A4A42] rounded-2xl shadow-sm w-full p-5 sm:p-6">
-        <div className="flex flex-row items-center justify-between pb-3 border-b border-[#373832]">
+      <div className="bg-[#282923] border border-[#4A4A42] rounded-2xl shadow-sm w-full p-5 sm:p-6 relative overflow-hidden">
+        {/* Destination Beacon Radial Aura on Hover (Idea 06 & Section 23) */}
+        <div
+          className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-[#D1B46A]/10 blur-2xl pointer-events-none transition-opacity duration-300"
+          style={{ opacity: isHovered ? 1 : 0.2 }}
+          aria-hidden="true"
+        />
+
+        <div className="flex flex-row items-center justify-between pb-3 border-b border-[#373832] relative z-10">
           <div className="flex items-center gap-2">
+            {/* Goal Beacon Icon Motif with Antenna Pillar: ◎ │ (Idea 06) */}
             <div
-              className="p-1.5 rounded-lg bg-[#30312C] text-[#D1B46A] border border-[#4A4A42] transition-transform duration-200"
+              className="relative p-1.5 rounded-lg bg-[#30312C] text-[#D1B46A] border border-[#4A4A42] transition-transform duration-200"
               style={{
-                transform: isHovered ? 'translateZ(14px)' : 'none',
+                transform: isHovered ? 'translateZ(14px) scale(1.08)' : 'none',
               }}
             >
               <Target className="w-4 h-4 text-[#D1B46A]" />
+              {isHovered && (
+                <span
+                  className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#E0C77F] animate-ping pointer-events-none"
+                  aria-hidden="true"
+                />
+              )}
             </div>
+
             <h3
               className={`text-sm font-bold transition-colors ${
                 isHovered ? 'text-[#FFF9EE]' : 'text-[#F5EFE4]'
@@ -39,9 +58,10 @@ export const GoalSummaryCard: React.FC = () => {
               Target Destination
             </h3>
           </div>
+
           <button
             onClick={() => setActiveTab('profile')}
-            className="text-xs text-[#A9B7D0] hover:text-[#F5EFE4] flex items-center gap-1 font-medium transition-colors"
+            className="text-xs text-[#A9B7D0] hover:text-[#F5EFE4] flex items-center gap-1 font-medium transition-colors active:scale-[0.985]"
             style={{
               transform: isHovered ? 'translateZ(10px)' : 'none',
             }}
@@ -51,7 +71,7 @@ export const GoalSummaryCard: React.FC = () => {
           </button>
         </div>
 
-        <div className="pt-3 space-y-3">
+        <div className="pt-3 space-y-3 relative z-10">
           <div
             style={{
               transform: isHovered
@@ -104,4 +124,3 @@ export const GoalSummaryCard: React.FC = () => {
     </AvenzaCardWrapper>
   );
 };
-

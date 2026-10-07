@@ -7,6 +7,9 @@ export interface AvenzaCardWrapperProps {
   preset?: CardMotionPreset;
   tint?: CardLightTint;
   accentBorderColor?: string;
+  isHighlighted?: boolean;
+  highlightColor?: string;
+  isPulsing?: boolean;
   className?: string;
   innerClassName?: string;
   children: React.ReactNode;
@@ -68,6 +71,9 @@ export const AvenzaCardWrapper: React.FC<AvenzaCardWrapperProps> = ({
   preset = 'secondary',
   tint = 'default',
   accentBorderColor,
+  isHighlighted = false,
+  highlightColor,
+  isPulsing = false,
   className = '',
   innerClassName = '',
   children,
@@ -280,6 +286,19 @@ export const AvenzaCardWrapper: React.FC<AvenzaCardWrapperProps> = ({
             }}
             aria-hidden="true"
           />
+
+          {/* Active Relationship / Journey Pulse Border Accent (Idea 11 & 15) */}
+          {(isHighlighted || isPulsing || accentBorderColor) && (
+            <div
+              className="absolute inset-0 rounded-2xl pointer-events-none transition-all duration-300"
+              style={{
+                border: `1.5px solid ${highlightColor || accentBorderColor || '#8798B7'}`,
+                boxShadow: `0 0 14px -2px ${highlightColor || accentBorderColor || '#8798B7'}45`,
+                opacity: isHighlighted || isPulsing ? 1 : 0.6,
+              }}
+              aria-hidden="true"
+            />
+          )}
 
           {/* Card Content Host */}
           {children}
